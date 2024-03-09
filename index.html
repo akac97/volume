@@ -20,38 +20,46 @@
         // main.js
         window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-        const recognition = new SpeechRecognition();
-        recognition.interimResults = true;
-        recognition.continuous = true; // This will make the speech recognition continue to listen even after the user has stopped speaking
+        if (window.SpeechRecognition) {
+            const recognition = new SpeechRecognition();
+            recognition.interimResults = true;
+            recognition.continuous = true; // This will make the speech recognition continue to listen even after the user has stopped speaking
 
-        let p = document.createElement('p');
-        const words = document.querySelector('.words');
-        words.appendChild(p);
-
-        recognition.addEventListener('result', e => {
-          const transcript = Array.from(e.results)
-            .map(result => result[0])
-            .map(result => result.transcript)
-            .join('');
-
-          const volumeIndicator = document.querySelector('#volume-indicator');
-          const volume = e.results[0][0].confidence;
-
-          if (volume < 0.5) {
-            volumeIndicator.style.backgroundColor = 'green';
-            volumeIndicator.textContent = 'Volume is good';
-          } else {
-            volumeIndicator.style.backgroundColor = 'red';
-            volumeIndicator.textContent = 'Volume is too loud';
-          }
-
-          if (e.results[0].isFinal) {
-            p = document.createElement('p');
+            let p = document.createElement('p');
+            const words = document.querySelector('.words');
             words.appendChild(p);
-          }
-        });
 
-        recognition.start(); // This will start the speech recognition as soon as the page loads
+            recognition.addEventListener('result', e => {
+              const transcript = Array.from(e.results)
+                .map(result => result[0])
+                .map(result => result.transcript)
+                .join('');
+
+              const volumeIndicator = document.querySelector('#volume-indicator');
+              const volume = e.results[0][0].confidence;
+
+              if (volume < 0.5) {
+                volumeIndicator.style.backgroundColor = 'green';
+                volumeIndicator.textContent = 'Volume is good';
+              } else {
+                volumeIndicator.style.backgroundColor = 'red';
+                volumeIndicator.textContent = 'Volume is too loud';
+              }
+
+              if (e.results[0].isFinal) {
+                p = document.createElement('p');
+                words.appendChild(p);
+              }
+            });
+
+            recognition.addEventListener('error', e => {
+              console.error('Speech recognition error:', e);
+            });
+
+            recognition.start(); // This will start the speech recognition as soon as the page loads
+        } else {
+            console.error('Web Speech API is not supported in this browser.');
+        }
     </script>
 </body>
 </html>
